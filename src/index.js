@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
       image.dataset.restaurant = `${ramen.restaurant}`;
       image.dataset.rating = `${ramen.rating}`;
       image.dataset.comment = `${ramen.comment}`;
-      image.id = `menu_item_${ramen.id}`
+      image.id = `menu_item_${ramen.id}`;
 
       // Add an event listener to each image for displaying details on click
       image.addEventListener("click", function () {
@@ -120,25 +120,31 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
   getRamen();
-  //this is the end of the DOM content loaded listener
+
+  //EDIT FORM:
+  const editForm = document.getElementById("edit-ramen");
+
+  editForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const editFormData = {
+      rating: Number(document.getElementById("edit-rating").value), // convert string to number
+      comment: document.getElementById("edit-comment").value,
+    };
+
+    fetch(`http://localhost:3000/ramens/${selected}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(editFormData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success", data);
+      })
+      .catch((error) => {
+        console.error("Error", error);
+      });
+  });
 });
-
-//using fetch, make the following requests:
-
-// Make get request using /ramens, /ramens/:id -> DONE!
-
-// Patch request /ramens/:id
-
-// Need to see list of ramen -> DONE!
-
-// need to show images for each ramen -> DONE!
-
-// Need to be able to click on ramen images -> DONE!
-
-// when clicked, it needs to show details about the ramen -> DONE!
-
-// need post request that updates ramen for new form
-// POST/ramens
-// need to be able to delete or update ramen
-// DELETE /ramens/:id
-//
