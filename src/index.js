@@ -12,22 +12,26 @@
 document.addEventListener("DOMContentLoaded", function () {
   //place all functions within this!
   console.log("The DOM is loaded!");
-  let selected
-  fetch("http://localhost:3000/ramens", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      showRamen(data);
+
+  let selected;
+
+  function getRamen() {
+    fetch("http://localhost:3000/ramens", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(),
     })
-    .catch((error) => {
-      console.error("Error fetching data", error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        showRamen(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data", error);
+      });
+  }
 
   //render function
   function showRamen(data) {
@@ -43,10 +47,11 @@ document.addEventListener("DOMContentLoaded", function () {
       image.dataset.restaurant = `${ramen.restaurant}`;
       image.dataset.rating = `${ramen.rating}`;
       image.dataset.comment = `${ramen.comment}`;
+      image.id = `menu_item_${ramen.id}`
 
       // Add an event listener to each image for displaying details on click
       image.addEventListener("click", function () {
-        selected = ramen.id
+        selected = ramen.id;
         document.querySelector(".detail-image").src = this.src;
         document.querySelector(".name").textContent = this.alt;
         document.querySelector(".restaurant").textContent =
@@ -55,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
           this.dataset.rating;
         document.querySelector("#comment-display").textContent =
           this.dataset.comment;
-
       });
 
       imageDiv.appendChild(image);
@@ -63,26 +67,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-// TRY TO DELETE THE RAMEN!
+  // TRY TO DELETE THE RAMEN!
   const deleteRamen = document.getElementById("delete-button");
-  deleteRamen.addEventListener("click", function (event) {
 
+  deleteRamen.addEventListener("click", function (event) {
     fetch(`http://localhost:3000/ramens/${selected}`, {
       method: "DELETE",
     })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Success", data)
-      //remove items from DOM
-    })
-    .then(() => {
-      div.remove();
-})
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-  })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success", data);
+        //remove items from DOM
+        document.getElementById("ramen_detail_wrapper").remove();
+        document.getElementById(`menu_item_${selected}`).remove();
+      })
 
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  });
 
   // FORM FOR NEW RAMEN
   const form = document.getElementById("new-ramen");
@@ -116,10 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error:", error);
       });
   });
-
-// Get the delete button
-
-//this is the end of the DOM content loaded listener
+  getRamen();
+  //this is the end of the DOM content loaded listener
 });
 
 //using fetch, make the following requests:
